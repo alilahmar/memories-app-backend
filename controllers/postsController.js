@@ -1,20 +1,20 @@
 import mongoose from 'mongoose'
 import Post from '../model/Post.js'
 
-export default {
+export const posts = {
     getPosts: async function (req, res) {
         try {
-            const posts = await Post.find({})
+            const posts = await Post.find()
             if (posts.length > 0) return res.status(200).json(posts)
         } catch (err) {
             res.json({ message: err })
         }
+
     },
 
     savePost: async function (req, res) {
         const newpost = new Post(req.body)
         try {
-
             await newpost.save()
             res.status(200).json(newpost)
         } catch (err) {
@@ -30,7 +30,7 @@ export default {
             res.json(updatedPost)
         } catch (err) {
 
-            res.json({ message: err })
+            res.status(400).json({ message: err.message })
         }
     },
 
@@ -45,4 +45,15 @@ export default {
         }
     },
 
+    getSinglePost: async function (req, res) {
+        const { id } = req.params
+
+        try {
+            if (!mongoose.Types.ObjectId(id)) return
+            const post = await Post.findById(id)
+            res.status(200).json(post)
+        } catch (err) {
+            res.json({ message: err })
+        }
+    }
 }

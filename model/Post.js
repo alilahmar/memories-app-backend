@@ -2,19 +2,9 @@ import mongoose from 'mongoose'
 const { Schema } = mongoose
 
 const postSchema = new Schema({
-    creator: {
-        type: String,
-        required: true
-    },
-
-    title: {
-        type: String,
-        required: true
-    },
-    message: {
-        type: String,
-        required: true
-    },
+    creator: String,
+    title: String,
+    message: String,
     tags: [String],
     selectedFile: String
 }, { timestamps: true })
