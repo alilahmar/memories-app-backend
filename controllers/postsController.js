@@ -70,17 +70,19 @@ export const posts = {
         }
     },
     addComment: async function (req, res) {
-        const newComment = new Comment(req.body)
-        const { postId } = req.params
+        const { body } = req.body;
+        const newComment = new Comment({ body })
+        const { postId } = req.params;
         try {
             const comment = await newComment.save()
             if (!mongoose.Types.ObjectId(postId)) return
-            const post = await Post.findById(postId)
-            post.comments.unshift(comment)
+            const post = await Post.findById(postId).populate('comments');
+            post.comments.unshift(comment);
             await post.save()
             res.status(200).json(post)
         } catch (err) {
-            res.json({ message: err })
+            res.json({ message: err.message });
         }
+
     }
 }
