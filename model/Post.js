@@ -6,7 +6,8 @@ const postSchema = new Schema({
     title: String,
     message: String,
     tags: [String],
-    selectedFile: String
+    selectedFile: String,
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
 }, { timestamps: true })
 
 

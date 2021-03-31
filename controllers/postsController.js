@@ -1,16 +1,29 @@
 import mongoose from 'mongoose'
 import Post from '../model/Post.js'
+import Comment from '../model/Comment.js'
 
 export const posts = {
     getPosts: async function (req, res) {
         try {
-            const posts = await Post.find()
+            const posts = await Post.find().populate('comments')
             if (posts.length > 0) return res.status(200).json(posts)
         } catch (err) {
             res.json({ message: err })
         }
 
     },
+
+    getPost: async function (req, res) {
+        const { id } = req.params
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) return
+            const post = await Post.findById(id).populate('comments')
+            return res.status(200).json(post)
+        } catch (err) {
+            res.json({ message: err })
+        }
+    },
+
 
     savePost: async function (req, res) {
         const newpost = new Post(req.body)
@@ -51,6 +64,20 @@ export const posts = {
         try {
             if (!mongoose.Types.ObjectId(id)) return
             const post = await Post.findById(id)
+            res.status(200).json(post)
+        } catch (err) {
+            res.json({ message: err })
+        }
+    },
+    addComment: async function (req, res) {
+        const newComment = new Comment(req.body)
+        const { postId } = req.params
+        try {
+            const comment = await newComment.save()
+            if (!mongoose.Types.ObjectId(postId)) return
+            const post = await Post.findById(postId)
+            post.comments.unshift(comment)
+            await post.save()
             res.status(200).json(post)
         } catch (err) {
             res.json({ message: err })
